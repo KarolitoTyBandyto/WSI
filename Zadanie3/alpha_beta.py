@@ -2,7 +2,8 @@ import numpy as np
 from tic_tac_toe import TicTacToe
 import random
 from copy import deepcopy
-
+import matplotlib.pyplot as plt
+import time
 
 NODES_PRUNED = 0
 
@@ -122,36 +123,39 @@ def alpha_beta_search(
 
 
 def main():
+    global NODES_PRUNED
     game = TicTacToe()
-    winners = []
-    depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    for depth in depths:
-        for i in range(50):
-            while not game.get_done():
-                if game.get_turn() == 1:
-                    _, move, evals = alpha_beta_search(game, depth=depth, maximizing_player=True)
-                    print(evals)
-                    max_value = max(evals.values())
-                    max_keys = [k for k, v in evals.items() if v == max_value]
-                    print(f"possible choices: {max_keys}")
-                    move = random.choice(max_keys)
-                    print(f"random choice: {move}")
-                    game.step(move)
-                else:
+    win_percentages = []
 
-                    _, moves, evals = alpha_beta_search(game, depth=depth, maximizing_player=False)
-                    print(evals)
-                    min_value = min(evals.values())
-                    min_keys = [k for k, v in evals.items() if v == min_value]
+    while not game.get_done():
+        if game.get_turn() == 1:
+            tic = time.time()
+            _, move, evals = alpha_beta_search(game, depth=10, maximizing_player=True)
+            tac = time.time()
+            print(f"Time taken: {tac - tic} seconds")
+            print(f"Nodes pruned: {NODES_PRUNED}")
+            NODES_PRUNED = 0
 
-                    print(f"possible choices: {min_keys}")
-
-                    move = random.choice(min_keys)
-                    print(f"random choice: {move}")
-                    game.step(move)
-
-                game.print_board()
-            print("Winner:", game.get_winner())
+            max_value = max(evals.values())
+            max_keys = [k for k, v in evals.items() if v == max_value]
+            move = random.choice(max_keys)
+            print(evals)
+            print(f"Move: {move}")
+            game.step(move)
+        else:
+            tic = time.time()
+            _, moves, evals = alpha_beta_search(game, depth=10, maximizing_player=False)
+            tac = time.time()
+            print(f"Time taken: {tac - tic} seconds")
+            print(f"Nodes pruned: {NODES_PRUNED}")
+            NODES_PRUNED = 0
+            print(evals)
+            print(f"Move: {move}")
+            min_value = min(evals.values())
+            min_keys = [k for k, v in evals.items() if v == min_value]
+            move = random.choice(min_keys)
+            game.step(move)
+        game.print_board()
 
 
 if __name__ == "__main__":

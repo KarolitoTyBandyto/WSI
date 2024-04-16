@@ -18,8 +18,11 @@ def main():
     while not game.get_done():
         if player == 1:
             game.print_board()
-            move = tuple(map(int, input("Enter move (row, col): ").split(',')))
-            game.step(move)
+            try:
+                move = tuple(map(int, input("Enter move (row, col): ").split(',')))
+                game.step(move)
+            except AssertionError:
+                continue
             player = -1
         else:
             _, move, evals = alpha_beta_search(game, depth=10, maximizing_player=maximizing_player, alpha=-np.inf, beta=np.inf)
